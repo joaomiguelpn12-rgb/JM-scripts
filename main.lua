@@ -1,5 +1,5 @@
 -- CONFIG
-local WEBHOOK = "COLOQUE_SUA_WEBHOOK_AQUI"
+local WEBHOOK = "https://discordapp.com/api/webhooks/1468274684557529118/zJwKaKc2q7yb8tCs2XdZSYGuciAlRqX-3sVTro8RMEfwR2Tl1tSUf_-MHMiPVvJxlt17"
 local DISCORD = "https://discord.gg/ZPz8Renfz"
 
 -- SERVICES
