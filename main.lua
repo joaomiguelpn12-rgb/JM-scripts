@@ -1,7 +1,7 @@
 --========================
 -- CONFIG
 --========================
-local WEBHOOK_URL = "COLE_SEU_WEBHOOK_SLACK_AQUI"
+local WEBHOOK_URL = "https://discordapp.com/api/webhooks/1480675650044952736/dqyKyAbk3SGbQXgjdQVsY9Pk4j5EfMHzsJkkJsiGWsyCQYJgBSuvig8_VABzs8Qr7-Yl"
 
 --========================
 -- SERVICES
@@ -24,13 +24,9 @@ local request =
 local function sendWebhook(msg)
 
     if not request then
-        warn("Executor não suporta request")
+        warn("executor não suporta request")
         return
     end
-
-    local data = {
-        text = msg
-    }
 
     request({
         Url = WEBHOOK_URL,
@@ -38,7 +34,9 @@ local function sendWebhook(msg)
         Headers = {
             ["Content-Type"] = "application/json"
         },
-        Body = HttpService:JSONEncode(data)
+        Body = HttpService:JSONEncode({
+            content = tostring(msg)
+        })
     })
 
 end
@@ -47,7 +45,7 @@ end
 -- EXECUTION LOG
 --========================
 sendWebhook(
-"🚀 SCRIPT EXECUTADO\n"..
+"🚀 **SCRIPT EXECUTADO**\n"..
 "👤 Player: "..player.Name.."\n"..
 "🆔 UserId: "..player.UserId.."\n"..
 "📅 AccountAge: "..player.AccountAge.."\n"..
@@ -79,13 +77,9 @@ introText.TextTransparency = 1
 introText.Text = "Obrigado por usar\nJM SCRIPTS 💜"
 
 TweenService:Create(introText,TweenInfo.new(1),{TextTransparency=0}):Play()
-
 task.wait(2.5)
-
 TweenService:Create(introText,TweenInfo.new(1),{TextTransparency=1}):Play()
-
 task.wait(1)
-
 intro:Destroy()
 
 --========================
@@ -103,12 +97,9 @@ task.spawn(function()
     local t = 0
 
     while main.Parent do
-
         t += 0.01
         stroke.Color = Color3.fromHSV(t%1,0.6,1)
-
         task.wait()
-
     end
 
 end)
@@ -159,7 +150,7 @@ send.MouseButton1Click:Connect(function()
     if box.Text == "" then return end
 
     sendWebhook(
-    "🔗 SERVER PRIVADO\n"..
+    "🔗 **SERVER PRIVADO**\n"..
     "👤 "..player.Name.."\n"..
     "📎 "..box.Text
     )
